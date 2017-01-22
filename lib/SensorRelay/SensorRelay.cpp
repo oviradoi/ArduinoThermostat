@@ -27,15 +27,31 @@ void SensorRelay::readTemps()
   {
     _currentTemp = _ds.getTempCByIndex(0);
     _hasCurrentTemp = true;
-    if(_currentTemp > _targetTemp + _hysteresis)
+    if(!_hasSobaTemp)
     {
-      // Turn on relay with LOW
-      digitalWrite(_pinRelay, LOW);
+      if(_currentTemp > _targetTemp + _hysteresis)
+      {
+        // Turn on relay with LOW
+        digitalWrite(_pinRelay, LOW);
+      }
+      else if(_currentTemp < _targetTemp - _hysteresis)
+      {
+        // Turn off relay with HIGH
+        digitalWrite(_pinRelay, HIGH);
+      }
     }
-    else if(_currentTemp < _targetTemp - _hysteresis)
+    else
     {
-      // Turn off relay with HIGH
-      digitalWrite(_pinRelay, HIGH);
+      if(_currentSobaTemp > max(_currentTemp, _targetTemp) + _hysteresis)
+      {
+        // Turn on relay with LOW
+        digitalWrite(_pinRelay, LOW);
+      }
+      else if (_currentSobaTemp < max(_currentTemp, _targetTemp) - _hysteresis)
+      {
+        // Turn off relay with HIGH
+        digitalWrite(_pinRelay, HIGH);
+      }
     }
   }
   else
@@ -129,12 +145,26 @@ void SensorRelay::print()
 
   // Relay indicator
   _lcd.setCursor(19,_idx-1);
-  if(_currentTemp > _targetTemp + _hysteresis)
+  if(!_hasSobaTemp)
   {
-    _lcd.print("*");
+    if(_currentTemp > _targetTemp + _hysteresis)
+    {
+      _lcd.print("*");
+    }
+    else if(_currentTemp < _targetTemp - _hysteresis)
+    {
+      _lcd.print(" ");
+    }
   }
-  else if(_currentTemp < _targetTemp - _hysteresis)
+  else
   {
-    _lcd.print(" ");
+    if(_currentSobaTemp > max(_currentTemp, _targetTemp) + _hysteresis)
+    {
+      _lcd.print("*");
+    }
+    else if (_currentSobaTemp < max(_currentTemp, _targetTemp) - _hysteresis)
+    {
+      _lcd.print(" ");
+    }
   }
 }

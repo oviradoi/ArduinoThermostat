@@ -12,6 +12,8 @@ private:
 
   float _currentTemp;
   bool _hasCurrentTemp;
+  float _currentSobaTemp;
+  bool _hasSobaTemp;
 
   int _targetTemp;
   int _editedTargetTemp;
@@ -32,10 +34,15 @@ private:
   LiquidCrystal_I2C& _lcd;
 public:
   SensorRelay(const char* name, int idx, int pinSensor, int pinRelay, LiquidCrystal_I2C& lcd);
+
   void init();
   void readTemps();
   void print();
   void editTemp(float dist);
+
+  void setSobaTemp(float sobaTemp) { _currentSobaTemp = sobaTemp; _hasSobaTemp = true; }
+
+  float getCurrentTemp() { return _currentTemp; }
 
   int getTargetTemp() { return _targetTemp; }
   void setTargetTemp(int target)

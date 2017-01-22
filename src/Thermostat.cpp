@@ -21,11 +21,17 @@ const int relay4 = 12;
 LiquidCrystal_I2C lcd(0x27,20,4);
 
 // SensorRelays
-SensorRelay sr1("Soba", 1, senzor1, relay1, lcd);
-SensorRelay sr2("Boiler", 2, senzor2, relay2, lcd);
-SensorRelay sr3("Retur", 3, senzor3, relay3, lcd);
-SensorRelay sr4("A.C.M.", 4, senzor4, relay4, lcd);
-SensorRelay srs[] = {sr1, sr2, sr3, sr4};
+//SensorRelay sr1("Soba", 1, senzor1, relay1, lcd);
+//SensorRelay sr2("Boiler", 2, senzor2, relay2, lcd);
+//SensorRelay sr3("Retur", 3, senzor3, relay3, lcd);
+//SensorRelay sr4("A.C.M.", 4, senzor4, relay4, lcd);
+SensorRelay srs[] =
+{
+  SensorRelay("Soba", 1, senzor1, relay1, lcd),
+  SensorRelay("Boiler", 2, senzor2, relay2, lcd),
+  SensorRelay("Retur", 3, senzor3, relay3, lcd),
+  SensorRelay("A.C.M.", 4, senzor4, relay4, lcd),
+};
 
 // Current target
 int currentTarget = -1;
@@ -116,10 +122,16 @@ void setup(void) {
 }
 
 void loop(){
-  for(SensorRelay& sr : srs)
+  srs[0].readTemps();
+  srs[1].readTemps();
+  srs[2].readTemps();
+  srs[3].setSobaTemp(srs[0].getCurrentTemp());
+  srs[3].readTemps();
+  /*for(SensorRelay& sr : srs)
   {
     sr.readTemps();
-  }
+  }*/
+
   readButton();
   editTargetTemp();
   for(SensorRelay& sr : srs)
