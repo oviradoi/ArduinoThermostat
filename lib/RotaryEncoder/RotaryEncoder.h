@@ -10,6 +10,7 @@ extern volatile uint8_t int1signal;
 extern volatile uint8_t int0history;
 extern volatile uint8_t int1history;
 extern volatile unsigned long menuTime;
+extern volatile unsigned long lastRotaryTime;
 
 void int0();
 void int1();

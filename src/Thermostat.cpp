@@ -23,8 +23,8 @@ LiquidCrystal_I2C lcd(0x27,20,4);
 // SensorRelays
 SensorRelay sr1("Soba", 1, senzor1, relay1, lcd);
 SensorRelay sr2("Boiler", 2, senzor2, relay2, lcd);
-SensorRelay sr3("Apa", 3, senzor3, relay3, lcd);
-SensorRelay sr4("Retur", 4, senzor4, relay4, lcd);
+SensorRelay sr3("Retur", 3, senzor3, relay3, lcd);
+SensorRelay sr4("A.C.M.", 4, senzor4, relay4, lcd);
 SensorRelay srs[] = {sr1, sr2, sr3, sr4};
 
 // Current target
@@ -38,6 +38,7 @@ void onPinChange(byte changeKind)
   {
     buttonPressed = true;
     menuTime = millis();
+    lastRotaryTime = millis();
   }
 }
 
@@ -125,5 +126,14 @@ void loop(){
   {
     sr.print();
   }
-  delay(500);
+  unsigned long currentTime = millis();
+  if(currentTime - lastRotaryTime < 60000)
+  {
+    lcd.backlight();
+  }
+  else
+  {
+    lcd.noBacklight();
+  }
+  delay(100);
 }

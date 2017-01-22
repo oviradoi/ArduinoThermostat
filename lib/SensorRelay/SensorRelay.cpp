@@ -17,6 +17,8 @@ void SensorRelay::init()
   _ds.begin();
   setTargetTemp(EEPROM.read(2*_idx));
   setHysteresis(EEPROM.read(2*_idx+1));
+  _lcd.setCursor(19,_idx-1);
+  _lcd.print("*");
 }
 
 void SensorRelay::readTemps()
@@ -39,6 +41,8 @@ void SensorRelay::readTemps()
   else
   {
     _hasCurrentTemp = false;
+    // Turn on relay with LOW
+    digitalWrite(_pinRelay, LOW);
   }
 }
 
@@ -110,11 +114,13 @@ void SensorRelay::print()
   _lcd.setCursor(6,_idx-1);
   _lcd.print(buffer);
   _lcd.print("\xDF");
+  _lcd.print(" ");
 
   // Target temp
   _lcd.setCursor(13,_idx-1);
   _lcd.print(_isEditMode ? _editedTargetTemp : _targetTemp);
   _lcd.print((_isEditMode && _editType == false) ? (char)255 : '\xDF');
+  _lcd.print(" ");
 
   // Hysteresis
   _lcd.setCursor(17, _idx-1);
