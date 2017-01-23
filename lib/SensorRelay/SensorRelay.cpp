@@ -49,35 +49,17 @@ void SensorRelay::readTemps()
 
 RelayChange SensorRelay::getRelayCondition()
 {
-  if(!_hasSobaTemp)
+  if(_currentTemp > _targetTemp + _hysteresis)
   {
-    if(_currentTemp > _targetTemp + _hysteresis)
-    {
-      return RelayChange::On;
-    }
-    else if(_currentTemp < _targetTemp - _hysteresis)
-    {
-      return RelayChange::Off;
-    }
-    else
-    {
-      return RelayChange::None;
-    }
+    return RelayChange::On;
+  }
+  else if(_currentTemp < _targetTemp - _hysteresis)
+  {
+    return RelayChange::Off;
   }
   else
   {
-    if(_currentSobaTemp > max(_currentTemp, _targetTemp) + _hysteresis)
-    {
-      return RelayChange::On;
-    }
-    else if (_currentSobaTemp < max(_currentTemp, _targetTemp) - _hysteresis)
-    {
-      return RelayChange::Off;
-    }
-    else
-    {
-      return RelayChange::None;
-    }
+    return RelayChange::None;
   }
 }
 

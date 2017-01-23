@@ -4,6 +4,7 @@
 #include <PciManager.h>
 #include <PciListenerImp.h>
 #include "SensorRelay.h"
+#include "SensorRelayACM.h"
 #include "RotaryEncoder.h"
 
 // Pins
@@ -21,13 +22,11 @@ const int relay4 = 12;
 LiquidCrystal_I2C lcd(0x27,20,4);
 
 // SensorRelays
-SensorRelay srs[] =
-{
-  SensorRelay("Soba", 1, senzor1, relay1, lcd),
-  SensorRelay("Boiler", 2, senzor2, relay2, lcd),
-  SensorRelay("Retur", 3, senzor3, relay3, lcd),
-  SensorRelay("A.C.M.", 4, senzor4, relay4, lcd),
-};
+SensorRelay sr1("Soba", 1, senzor1, relay1, lcd);
+SensorRelay sr2("Boiler", 2, senzor2, relay2, lcd);
+SensorRelay sr3("Retur", 3, senzor3, relay3, lcd);
+SensorRelayACM sr4("A.C.M.", 4, senzor4, relay4, lcd, sr1);
+SensorRelay* srs[] = { &sr1, &sr2, &sr3, &sr4 };
 
 // Current target
 int currentTarget = -1;
@@ -64,13 +63,13 @@ void readButton()
     if(prevTarget != -1)
     {
       int prevSensorIdx = prevTarget / 2;
-      srs[prevSensorIdx].setEditMode(false, false);
+      srs[prevSensorIdx]->setEditMode(false, false);
     }
     if(currentTarget != -1)
     {
       int sensorIdx = currentTarget / 2;
       int editType = currentTarget % 2;
-      srs[sensorIdx].setEditMode(true, editType==1);
+      srs[sensorIdx]->setEditMode(true, editType==1);
     }
     prevTarget = currentTarget;
     rotaryHalfSteps = 0;
@@ -82,7 +81,7 @@ void readButton()
     if(currentTime < lastMenuTime || currentTime - lastMenuTime > 5000){
 
       // Exit menu
-      srs[currentTarget / 2].setEditMode(false, false);
+      srs[currentTarget / 2]->setEditMode(false, false);
 
       currentTarget = -1;
       prevTarget = -1;
@@ -91,10 +90,10 @@ void readButton()
 }
 
 void editTargetTemp(){
-  for(SensorRelay& sr : srs){
-    if(sr.isEditMode()){
+  for(SensorRelay* sr : srs){
+    if(sr->isEditMode()){
       float dist = (float)rotaryHalfSteps / 2.;
-      sr.editTemp(dist);
+      sr->editTemp(dist);
     }
   }
 }
@@ -107,9 +106,8 @@ void setup(void) {
   lcd.backlight();
   pinMode(buton, INPUT);
 
-  for(SensorRelay& sr : srs)
-  {
-    sr.init();
+  for(SensorRelay* sr : srs){
+    sr->init();
   }
 
   PciManager.registerListener(buton, &listener);
@@ -118,18 +116,18 @@ void setup(void) {
 }
 
 void loop(){
-  srs[0].readTemps();
-  srs[1].readTemps();
-  srs[2].readTemps();
-  srs[3].setSobaTemp(srs[0].getCurrentTemp());
-  srs[3].readTemps();
+  
+  for(SensorRelay* sr : srs){
+    sr->readTemps();
+  }
 
   readButton();
   editTargetTemp();
-  for(SensorRelay& sr : srs)
-  {
-    sr.print();
+
+  for(SensorRelay* sr : srs){
+    sr->print();
   }
+
   unsigned long currentTime = millis();
   if(currentTime > lastLightTime && currentTime - lastLightTime < 60000)
   {

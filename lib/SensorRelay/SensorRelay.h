@@ -4,18 +4,16 @@
 #include <DallasTemperature.h>
 #include <LiquidCrystal_I2C.h>
 
-enum RelayChange { None, On, Off};
+enum RelayChange { None, On, Off };
 
 class SensorRelay {
-private:
+protected:
   int _idx;
   int _pinSensor;
   int _pinRelay;
 
   float _currentTemp;
   bool _hasCurrentTemp;
-  float _currentSobaTemp;
-  bool _hasSobaTemp;
 
   int _targetTemp;
   int _editedTargetTemp;
@@ -44,22 +42,20 @@ public:
 
   virtual RelayChange getRelayCondition();
 
-  void setSobaTemp(float sobaTemp) { _currentSobaTemp = sobaTemp; _hasSobaTemp = true; }
+  float getCurrentTemp() const { return _currentTemp; }
 
-  float getCurrentTemp() { return _currentTemp; }
-
-  int getTargetTemp() { return _targetTemp; }
+  int getTargetTemp() const { return _targetTemp; }
   void setTargetTemp(int target)
   {
     _targetTemp = min(max(target, _minTemp),_maxTemp);
   }
 
-  int getHysteresis() { return _hysteresis; }
+  int getHysteresis() const { return _hysteresis; }
   void setHysteresis(int hyst)
   {
     _hysteresis = min(max(hyst, _minHyst),_maxHyst);
   }
 
-  bool isEditMode(){return _isEditMode;}
+  bool isEditMode() const { return _isEditMode; }
   void setEditMode(bool editMode, bool editType);
 };
