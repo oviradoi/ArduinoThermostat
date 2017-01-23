@@ -27,31 +27,16 @@ void SensorRelay::readTemps()
   {
     _currentTemp = _ds.getTempCByIndex(0);
     _hasCurrentTemp = true;
-    if(!_hasSobaTemp)
+    RelayChange change = getRelayCondition();
+    if(change == RelayChange::On)
     {
-      if(_currentTemp > _targetTemp + _hysteresis)
-      {
-        // Turn on relay with LOW
-        digitalWrite(_pinRelay, LOW);
-      }
-      else if(_currentTemp < _targetTemp - _hysteresis)
-      {
-        // Turn off relay with HIGH
-        digitalWrite(_pinRelay, HIGH);
-      }
+      // Turn on relay with LOW
+      digitalWrite(_pinRelay, LOW);
     }
-    else
+    else if (change == RelayChange::Off)
     {
-      if(_currentSobaTemp > max(_currentTemp, _targetTemp) + _hysteresis)
-      {
-        // Turn on relay with LOW
-        digitalWrite(_pinRelay, LOW);
-      }
-      else if (_currentSobaTemp < max(_currentTemp, _targetTemp) - _hysteresis)
-      {
-        // Turn off relay with HIGH
-        digitalWrite(_pinRelay, HIGH);
-      }
+      // Turn off relay with HIGH
+      digitalWrite(_pinRelay, HIGH);
     }
   }
   else
@@ -59,6 +44,40 @@ void SensorRelay::readTemps()
     _hasCurrentTemp = false;
     // Turn on relay with LOW
     digitalWrite(_pinRelay, LOW);
+  }
+}
+
+RelayChange SensorRelay::getRelayCondition()
+{
+  if(!_hasSobaTemp)
+  {
+    if(_currentTemp > _targetTemp + _hysteresis)
+    {
+      return RelayChange::On;
+    }
+    else if(_currentTemp < _targetTemp - _hysteresis)
+    {
+      return RelayChange::Off;
+    }
+    else
+    {
+      return RelayChange::None;
+    }
+  }
+  else
+  {
+    if(_currentSobaTemp > max(_currentTemp, _targetTemp) + _hysteresis)
+    {
+      return RelayChange::On;
+    }
+    else if (_currentSobaTemp < max(_currentTemp, _targetTemp) - _hysteresis)
+    {
+      return RelayChange::Off;
+    }
+    else
+    {
+      return RelayChange::None;
+    }
   }
 }
 
@@ -145,26 +164,13 @@ void SensorRelay::print()
 
   // Relay indicator
   _lcd.setCursor(19,_idx-1);
-  if(!_hasSobaTemp)
+  RelayChange change = getRelayCondition();
+  if(change == RelayChange::On)
   {
-    if(_currentTemp > _targetTemp + _hysteresis)
-    {
-      _lcd.print("*");
-    }
-    else if(_currentTemp < _targetTemp - _hysteresis)
-    {
-      _lcd.print(" ");
-    }
+    _lcd.print("*");
   }
-  else
+  else if (change == RelayChange::Off)
   {
-    if(_currentSobaTemp > max(_currentTemp, _targetTemp) + _hysteresis)
-    {
-      _lcd.print("*");
-    }
-    else if (_currentSobaTemp < max(_currentTemp, _targetTemp) - _hysteresis)
-    {
-      _lcd.print(" ");
-    }
+    _lcd.print(" ");
   }
 }

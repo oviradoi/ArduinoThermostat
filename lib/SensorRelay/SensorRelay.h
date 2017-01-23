@@ -4,6 +4,8 @@
 #include <DallasTemperature.h>
 #include <LiquidCrystal_I2C.h>
 
+enum RelayChange { None, On, Off};
+
 class SensorRelay {
 private:
   int _idx;
@@ -39,6 +41,8 @@ public:
   void readTemps();
   void print();
   void editTemp(float dist);
+
+  virtual RelayChange getRelayCondition();
 
   void setSobaTemp(float sobaTemp) { _currentSobaTemp = sobaTemp; _hasSobaTemp = true; }
 
