@@ -21,10 +21,6 @@ const int relay4 = 12;
 LiquidCrystal_I2C lcd(0x27,20,4);
 
 // SensorRelays
-//SensorRelay sr1("Soba", 1, senzor1, relay1, lcd);
-//SensorRelay sr2("Boiler", 2, senzor2, relay2, lcd);
-//SensorRelay sr3("Retur", 3, senzor3, relay3, lcd);
-//SensorRelay sr4("A.C.M.", 4, senzor4, relay4, lcd);
 SensorRelay srs[] =
 {
   SensorRelay("Soba", 1, senzor1, relay1, lcd),
@@ -43,8 +39,8 @@ void onPinChange(byte changeKind)
   if(changeKind==0)
   {
     buttonPressed = true;
-    menuTime = millis();
-    lastRotaryTime = millis();
+    lastMenuTime = millis();
+    lastLightTime = millis();
   }
 }
 
@@ -83,7 +79,7 @@ void readButton()
   {
     unsigned long currentTime = millis();
 
-    if(currentTime < menuTime || currentTime - menuTime > 5000){
+    if(currentTime < lastMenuTime || currentTime - lastMenuTime > 5000){
 
       // Exit menu
       srs[currentTarget / 2].setEditMode(false, false);
@@ -127,10 +123,6 @@ void loop(){
   srs[2].readTemps();
   srs[3].setSobaTemp(srs[0].getCurrentTemp());
   srs[3].readTemps();
-  /*for(SensorRelay& sr : srs)
-  {
-    sr.readTemps();
-  }*/
 
   readButton();
   editTargetTemp();
@@ -139,7 +131,7 @@ void loop(){
     sr.print();
   }
   unsigned long currentTime = millis();
-  if(currentTime - lastRotaryTime < 60000)
+  if(currentTime > lastLightTime && currentTime - lastLightTime < 60000)
   {
     lcd.backlight();
   }

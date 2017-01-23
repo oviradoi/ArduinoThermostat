@@ -12,10 +12,11 @@ volatile uint8_t int0signal = 0;
 volatile uint8_t int1signal = 0;
 volatile uint8_t int0history = 0;
 volatile uint8_t int1history = 0;
-volatile unsigned long lastRotaryTime;
 
 // Time when we entered the menu
-volatile unsigned long menuTime = 0;
+volatile unsigned long lastMenuTime = 0;
+// Time when we turned on the light
+volatile unsigned long lastLightTime = 0;
 
 void int0()
 {
@@ -26,16 +27,15 @@ void int0()
   if ( int0history==int0signal )
     return;
   int0time = micros();
-  menuTime = millis();
+  lastMenuTime = millis();
+  lastLightTime = millis();
   if ( int0signal == int1signal )
   {
     rotaryHalfSteps++;
-    lastRotaryTime = millis();
   }
   else
   {
     rotaryHalfSteps--;
-    lastRotaryTime = millis();
   }
 }
 
