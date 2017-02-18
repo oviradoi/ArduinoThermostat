@@ -8,22 +8,22 @@
 #include "RotaryEncoder.h"
 
 // Pins
-const int buton = 4;
-const int senzor1 = 5;
-const int senzor2 = 6;
-const int senzor3 = 7;
-const int senzor4 = 8;
-const int relay1 = 9;
-const int relay2 = 10;
-const int relay3 = 11;
-const int relay4 = 12;
+const int buton = 9;
+const int senzor1 = A0;
+const int senzor2 = A1;
+const int senzor3 = A2;
+const int senzor4 = A3;
+const int relay1 = 5;
+const int relay2 = 6;
+const int relay3 = 7;
+const int relay4 = 8;
 
 // LCD
 LiquidCrystal_I2C lcd(0x27,20,4);
 
 // SensorRelays
 SensorRelay sr1("Soba", 1, senzor1, relay1, lcd);
-SensorRelay sr2("Boiler", 2, senzor2, relay2, lcd);
+SensorRelay sr2("Puffer", 2, senzor2, relay2, lcd);
 SensorRelay sr3("Retur", 3, senzor3, relay3, lcd);
 SensorRelayACM sr4("A.C.M.", 4, senzor4, relay4, lcd, sr1);
 SensorRelay* srs[] = { &sr1, &sr2, &sr3, &sr4 };
@@ -116,7 +116,7 @@ void setup(void) {
 }
 
 void loop(){
-  
+
   for(SensorRelay* sr : srs){
     sr->readTemps();
   }
