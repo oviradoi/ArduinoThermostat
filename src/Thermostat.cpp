@@ -6,6 +6,7 @@
 #include "SensorRelay.h"
 #include "SensorRelayACM.h"
 #include "RotaryEncoder.h"
+#include "WebUi.h"
 
 // Pins
 const int buton = 9;
@@ -106,6 +107,8 @@ void setup(void) {
   lcd.backlight();
   pinMode(buton, INPUT);
 
+  InitWebUi(srs, 4);
+
   for(SensorRelay* sr : srs){
     sr->init();
   }
@@ -128,6 +131,8 @@ void loop(){
     sr->print();
   }
 
+  HandleWebClient();
+
   unsigned long currentTime = millis();
   if(currentTime > lastLightTime && currentTime - lastLightTime < 60000)
   {
@@ -137,5 +142,4 @@ void loop(){
   {
     lcd.noBacklight();
   }
-  delay(100);
 }

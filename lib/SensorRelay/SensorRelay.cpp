@@ -8,6 +8,7 @@ SensorRelay::SensorRelay(const char* name, int idx, int pinSensor, int pinRelay,
   _currentTemp = 0.0;
   _hasCurrentTemp = false;
   _name = name;
+  _isRelayOn = true;
 }
 
 void SensorRelay::init()
@@ -15,10 +16,7 @@ void SensorRelay::init()
   pinMode(_pinRelay, OUTPUT);
   pinMode(_pinSensor, INPUT);
   _ds.begin();
-  setTargetTemp(EEPROM.read(2*_idx));
-  setHysteresis(EEPROM.read(2*_idx+1));
-  _lcd.setCursor(19,_idx-1);
-  _lcd.print("*");
+  loadData();
 }
 
 void SensorRelay::readTemps()
@@ -30,20 +28,16 @@ void SensorRelay::readTemps()
     RelayChange change = getRelayCondition();
     if(change == RelayChange::On)
     {
-      // Turn on relay with LOW
-      digitalWrite(_pinRelay, LOW);
+      turnRelayOn();
     }
     else if (change == RelayChange::Off)
     {
-      // Turn off relay with HIGH
-      digitalWrite(_pinRelay, HIGH);
+      turnRelayOff();
     }
   }
   else
   {
-    _hasCurrentTemp = false;
-    // Turn on relay with LOW
-    digitalWrite(_pinRelay, LOW);
+    turnRelayOn();
   }
 }
 
@@ -99,8 +93,7 @@ void SensorRelay::setEditMode(bool editMode, bool editType)
   {
     setTargetTemp(_editedTargetTemp);
     setHysteresis(_editedHysteresis);
-    EEPROM.write(2*_idx, _targetTemp);
-    EEPROM.write(2*_idx+1, _hysteresis);
+    saveData();
   }
   else if (!_isEditMode && editMode)
   {
@@ -146,13 +139,17 @@ void SensorRelay::print()
 
   // Relay indicator
   _lcd.setCursor(19,_idx-1);
-  RelayChange change = getRelayCondition();
-  if(change == RelayChange::On)
-  {
-    _lcd.print("*");
-  }
-  else if (change == RelayChange::Off)
-  {
-    _lcd.print(" ");
-  }
+  _lcd.print(isRelayOn()?"*":" ");
+}
+
+void SensorRelay::saveData()
+{
+  EEPROM.write(2*_idx, _targetTemp);
+  EEPROM.write(2*_idx+1, _hysteresis);
+}
+
+void SensorRelay::loadData()
+{
+  setTargetTemp(EEPROM.read(2*_idx));
+  setHysteresis(EEPROM.read(2*_idx+1));
 }

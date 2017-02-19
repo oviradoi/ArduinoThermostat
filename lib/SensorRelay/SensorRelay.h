@@ -20,6 +20,8 @@ protected:
   int _hysteresis;
   int _editedHysteresis;
 
+  bool _isRelayOn;
+
   const char* _name;
   bool _isEditMode;
   bool _editType;
@@ -42,6 +44,8 @@ public:
 
   virtual RelayChange getRelayCondition();
 
+  const char* getName() { return _name; }
+
   float getCurrentTemp() const { return _currentTemp; }
 
   int getTargetTemp() const { return _targetTemp; }
@@ -58,4 +62,11 @@ public:
 
   bool isEditMode() const { return _isEditMode; }
   void setEditMode(bool editMode, bool editType);
+
+  void saveData();
+  void loadData();
+
+  void turnRelayOn(){_isRelayOn = true; digitalWrite(_pinRelay, LOW);}
+  void turnRelayOff(){_isRelayOn = false; digitalWrite(_pinRelay, HIGH);}
+  bool isRelayOn(){return _isRelayOn;}
 };

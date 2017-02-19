@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Termostat</title>
+
+<!-- CSS goes in the document HEAD or added to your external stylesheet -->
+<style type="text/css">
+table.gridtable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+table.gridtable th {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #dedede;
+}
+table.gridtable td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
+}
+</style>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="jquery-3.1.1.min.js"></script>
+<script src="jquery.color-2.1.2.min.js"></script>
+
+<script>
+
+baseUrl = "http://192.168.2.145/";
+
+updateCol = function(idx, col, data){
+	currentText = $("#"+col+idx).text();
+	if(currentText != data)
+	{
+		if(data != undefined)
+		{
+			$("#"+col+idx).css("background-color", "aqua");
+		} else {
+			$("#"+col+idx).css("background-color", "red");
+		}
+		$("#"+col+idx).text(data);
+		$("#"+col+idx).val(Number(data));
+		$("#"+col+idx).animate({backgroundColor: "white"}, 1000);
+	}
+}
+
+updateCols = function(resp, col){
+	names = undefined;
+	count = undefined;
+	if (resp != undefined) {
+		names = resp.split("\n")
+		count = names.shift();
+	}
+	if(count != undefined){
+		$("#"+col+"hdr").css("background-color", "aqua");
+		for(i=0;i<count;i++){
+			updateCol(i, col, names[i]);
+		}
+	} else {
+		$("#"+col+"hdr").css("background-color", "red");
+		for(i=0;i<4;i++){
+			updateCol(i, col, undefined);
+		}
+	}
+	$("#"+col+"hdr").animate({backgroundColor: "#dedede"}, 1000);
+}
+
+refreshName = function(){
+	return $.ajax(baseUrl+"name")
+		.done(resp => updateCols(resp, "name"))
+		.fail(resp => updateCols(undefined, "name"));
+}
+
+refreshTemp = function(){
+	return $.ajax(baseUrl+"temp")
+		.done(resp => updateCols(resp, "temp"))
+		.fail(resp => updateCols(undefined, "temp"));
+}
+
+refreshTarget = function(){
+	return $.ajax(baseUrl+"target")
+		.done(resp => updateCols(resp, "target"))
+		.done(resp => updateCols(resp, "settarget"))
+		.fail(resp => updateCols(undefined, "target"));
+}
+
+refreshHyst = function(){
+	return $.ajax(baseUrl+"hyst")
+		.done(resp => updateCols(resp, "hyst"))
+		.done(resp => updateCols(resp, "sethyst"))
+		.fail(resp => updateCols(undefined, "hyst"));
+}
+
+refreshAll = function(){
+	refreshName()
+	.then(()=>refreshTemp())
+	.then(()=>refreshTarget())
+	.then(()=>refreshHyst());
+}
+
+sethyst = function(idx, hyst){
+	$.post(baseUrl+"hyst?"+(idx+1),"hyst="+hyst)
+	.then(refreshAll);
+}
+
+settarget = function(idx, target){
+	$.post(baseUrl+"target?"+(idx+1),"temp="+target)
+	.then(refreshAll);
+}
+
+$(document).ready(function(){
+    $("#refresh").click(refreshAll);
+
+		for(i=0;i<4;i++)
+		{
+			(i => {
+				$("#sethyst"+i+"btn").click(function(){
+					sethyst(i,$("#sethyst"+i).val());
+				})
+			})(i);
+		}
+
+		for(i=0;i<4;i++)
+		{
+			(i => {
+				$("#settarget"+i+"btn").click(function(){
+					settarget(i,$("#settarget"+i).val());
+				})
+			})(i);
+		}
+});
+</script>
+
+</head>
+<body>
+<button id="refresh">Refresh</button>
+<hr/>
+<div style="overflow-x:auto;">
+<table class="gridtable">
+  <tr>
+    <th id="namehdr">Senzor</th>
+    <th id="temphdr">Temp</th>
+		<th id="targethdr">Tinta</th>
+		<th id="hysthdr">Hyst</th>
+		<th id="settargethdr">Set Temp</th>
+		<th id="sethysthdr">Set Hyst</th>
+  </tr>
+  <tr>
+    <td id="name0"></td>
+    <td id="temp0"></td>
+		<td id="target0"></td>
+		<td id="hyst0"></td>
+		<td>
+			<input type="number" id="settarget0" min="10" max="80" />
+			<button id="settarget0btn">Set</button>
+		</td>
+		<td>
+			<input type="number" id="sethyst0" min="0" max="9" />
+			<button id="sethyst0btn">Set</button>
+		</td>
+  </tr>
+  <tr>
+    <td id="name1"></td>
+    <td id="temp1"></td>
+		<td id="target1"></td>
+		<td id="hyst1"></td>
+		<td>
+			<input type="number" id="settarget1" min="10" max="80" />
+			<button id="settarget1btn">Set</button>
+		</td>
+		<td>
+			<input type="number" id="sethyst1" min="0" max="9" />
+			<button id="sethyst1btn">Set</button>
+		</td>
+  </tr>
+  <tr>
+    <td id="name2"></td>
+    <td id="temp2"></td>
+		<td id="target2"></td>
+		<td id="hyst2"></td>
+		<td>
+			<input type="number" id="settarget2" min="10" max="80" />
+			<button id="settarget2btn">Set</button>
+		</td>
+		<td>
+			<input type="number" id="sethyst2" min="0" max="9" />
+			<button id="sethyst2btn">Set</button>
+		</td>
+  </tr>
+  <tr>
+    <td id="name3"></td>
+    <td id="temp3"></td>
+		<td id="target3"></td>
+		<td id="hyst3"></td>
+		<td>
+			<input type="number" id="settarget3" min="10" max="80" />
+			<button id="settarget3btn">Set</button>
+		</td>
+		<td>
+			<input type="number" id="sethyst3" min="0" max="9" />
+			<button id="sethyst3btn">Set</button>
+		</td>
+  </tr>
+</table>
+</div>
+</body>
+</html>
