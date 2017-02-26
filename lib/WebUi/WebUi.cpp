@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Ethernet.h>
+
+#define WEBDUINO_FAVICON_DATA ""
 #include <WebServer.h>
 
 static byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
@@ -162,6 +164,5 @@ void InitWebUi(SensorRelay** srs, int sensorCount)
 
 void HandleWebClient()
 {
-  Ethernet.maintain();
   server.processConnection();
 }
