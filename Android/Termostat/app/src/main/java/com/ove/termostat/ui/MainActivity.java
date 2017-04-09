@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.example.ove.termostat.R;
 import com.ove.termostat.model.GetInfoTask;
@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
 
     private SensorRelayAdapter adapter;
     private ListView listView;
-    private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private GetInfoTask getInfoTask;
@@ -49,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
         adapter = new SensorRelayAdapter(this, R.layout.sensorrelay_listitem , termostatApp.sensorRelays);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        progressBar = (ProgressBar) findViewById(android.R.id.progress);
         listView = (ListView)findViewById(android.R.id.list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
@@ -102,15 +100,18 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
 
     @Override
     public void showProgress(int percentage){
-        progressBar.setVisibility(View.VISIBLE);
-        progressBar.setProgress(percentage);
-        progressBar.setMax(100);
     }
 
     @Override
-    public void hideProgress(){
-        progressBar.setVisibility(View.INVISIBLE);
-        swipeRefreshLayout.setRefreshing(false);
+    public void hideProgress() {
+        new CountDownTimer(1000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }.start();
     }
 
     @Override

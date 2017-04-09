@@ -8,14 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.ove.termostat.com.ove.termostat.ui.MainActivity">
-
-    <ProgressBar
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:visibility="invisible"
-        android:id="@android:id/progress" />
+    tools:context="com.ove.termostat.ui.MainActivity">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"

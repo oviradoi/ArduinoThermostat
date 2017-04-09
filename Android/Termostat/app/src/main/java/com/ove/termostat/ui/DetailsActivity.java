@@ -18,7 +18,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.ove.termostat.R;
@@ -42,7 +41,6 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
     private TextView txtCurrentTemp;
     private TextView txtTargetTemp;
     private TextView txtHysteresis;
-    private ProgressBar progressBar;
 
     private EditText editTarget;
     private EditText editHyst;
@@ -62,7 +60,6 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
         txtCurrentTemp = (TextView) findViewById(R.id.tvCurrentTemp);
         txtTargetTemp = (TextView) findViewById(R.id.tvTargetTemp);
         txtHysteresis = (TextView) findViewById(R.id.tvHyst);
-        progressBar = (ProgressBar) findViewById(android.R.id.progress);
         editTarget = (EditText) findViewById(R.id.editTarget);
         editHyst = (EditText) findViewById(R.id.editHyst);
         setTarget = (Button) findViewById(R.id.setTarget);
@@ -243,14 +240,11 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
 
     @Override
     public void showProgress(int progress) {
-        progressBar.setVisibility(View.VISIBLE);
-        progressBar.setProgress(progress);
-        progressBar.setMax(100);
     }
 
     @Override
     public void hideProgress() {
-        progressBar.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
