@@ -13,6 +13,7 @@ WebServer server("", 80);
 
 static SensorRelay** _srs;
 static int _sensorCount;
+static const char* _base64pwd = nullptr;
 
 #define NAMELEN 32
 #define VALUELEN 32
@@ -33,7 +34,7 @@ int getParam(WebServer&server, char* url_tail)
 
 void nameCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
-  if (type == WebServer::GET)
+  if (type == WebServer::GET && server.checkCredentials(_base64pwd))
   {
     server.httpSuccess();
     server.println(_sensorCount);
@@ -55,7 +56,7 @@ void nameCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
 
 void tempCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
-  if (type == WebServer::GET)
+  if (type == WebServer::GET && server.checkCredentials(_base64pwd))
   {
     server.httpSuccess();
     server.println(_sensorCount);
@@ -72,7 +73,7 @@ void tempCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
 
 void targetCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
-  if (type == WebServer::GET)
+  if (type == WebServer::GET && server.checkCredentials(_base64pwd))
   {
     server.httpSuccess();
     server.println(_sensorCount);
@@ -81,7 +82,7 @@ void targetCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail
       server.println(_srs[i]->getTargetTemp());
     }
   }
-  else if (type == WebServer::POST)
+  else if (type == WebServer::POST && server.checkCredentials(_base64pwd))
   {
     int param = getParam(server, url_tail);
     if (param >= 1 && param <=4)
@@ -109,7 +110,7 @@ void targetCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail
 
 void hystCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
-  if (type == WebServer::GET)
+  if (type == WebServer::GET && server.checkCredentials(_base64pwd))
   {
     server.httpSuccess();
     server.println(_sensorCount);
@@ -118,7 +119,7 @@ void hystCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
       server.println(_srs[i]->getHysteresis());
     }
   }
-  else if (type == WebServer::POST)
+  else if (type == WebServer::POST && server.checkCredentials(_base64pwd))
   {
     int param = getParam(server, url_tail);
     if (param >= 1 && param <=4)
@@ -144,10 +145,11 @@ void hystCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
   }
 }
 
-void InitWebUi(SensorRelay** srs, int sensorCount)
+void InitWebUi(SensorRelay** srs, int sensorCount, const char* base64Pwd)
 {
   _srs = srs;
   _sensorCount = sensorCount;
+  _base64pwd = base64Pwd;
 
   pinMode(4, OUTPUT);
   digitalWrite(4, HIGH);

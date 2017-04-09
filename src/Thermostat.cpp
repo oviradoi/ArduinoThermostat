@@ -30,6 +30,9 @@ SensorRelayDepend sr4("A.C.M.", 4, senzor4, relay4, lcd, sr1, Formula1);
 
 SensorRelay* srs[] = { &sr1, &sr2, &sr3, &sr4 };
 
+// Web password (base64 encoded), max 36 characters
+const char * webPassword = "VGVzdA==";
+
 // Current target
 int currentTarget = -1;
 int prevTarget = -1;
@@ -108,7 +111,7 @@ void setup(void) {
   lcd.backlight();
   pinMode(buton, INPUT);
 
-  InitWebUi(srs, 4);
+  InitWebUi(srs, 4, webPassword);
 
   for(SensorRelay* sr : srs){
     sr->init();
