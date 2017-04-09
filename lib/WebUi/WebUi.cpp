@@ -32,7 +32,7 @@ int getParam(WebServer&server, char* url_tail)
   return 0;
 }
 
-void nameCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
+void getInfoCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
   if (type == WebServer::GET && server.checkCredentials(_base64pwd))
   {
@@ -40,29 +40,19 @@ void nameCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
     server.println(_sensorCount);
     for(int i=0;i<_sensorCount;i++)
     {
+      // Print name
       server.print(_srs[i]->getName());
       if(_srs[i]->isRelayOn())
       {
         server.print("*");
       }
       server.println();
-    }
-  }
-  else
-  {
-    server.httpUnauthorized();
-  }
-}
-
-void tempCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
-{
-  if (type == WebServer::GET && server.checkCredentials(_base64pwd))
-  {
-    server.httpSuccess();
-    server.println(_sensorCount);
-    for(int i=0;i<_sensorCount;i++)
-    {
+      // Print current temp
       server.println(_srs[i]->getCurrentTemp());
+      // Print target temp
+      server.println(_srs[i]->getTargetTemp());
+      // Print hyst
+      server.println(_srs[i]->getHysteresis());
     }
   }
   else
@@ -73,16 +63,7 @@ void tempCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
 
 void targetCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
-  if (type == WebServer::GET && server.checkCredentials(_base64pwd))
-  {
-    server.httpSuccess();
-    server.println(_sensorCount);
-    for(int i=0;i<_sensorCount;i++)
-    {
-      server.println(_srs[i]->getTargetTemp());
-    }
-  }
-  else if (type == WebServer::POST && server.checkCredentials(_base64pwd))
+  if (type == WebServer::POST && server.checkCredentials(_base64pwd))
   {
     int param = getParam(server, url_tail);
     if (param >= 1 && param <=4)
@@ -110,16 +91,7 @@ void targetCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail
 
 void hystCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
-  if (type == WebServer::GET && server.checkCredentials(_base64pwd))
-  {
-    server.httpSuccess();
-    server.println(_sensorCount);
-    for(int i=0;i<_sensorCount;i++)
-    {
-      server.println(_srs[i]->getHysteresis());
-    }
-  }
-  else if (type == WebServer::POST && server.checkCredentials(_base64pwd))
+  if (type == WebServer::POST && server.checkCredentials(_base64pwd))
   {
     int param = getParam(server, url_tail);
     if (param >= 1 && param <=4)
@@ -156,9 +128,8 @@ void InitWebUi(SensorRelay** srs, int sensorCount, const char* base64Pwd)
 
   Ethernet.begin(mac, ipadr);
 
-  server.setDefaultCommand(&nameCmd);
-  server.addCommand("name", &nameCmd);
-  server.addCommand("temp", &tempCmd);
+  server.setDefaultCommand(&getInfoCmd);
+  server.addCommand("info", &getInfoCmd);
   server.addCommand("target", &targetCmd);
   server.addCommand("hyst", &hystCmd);
   server.begin();

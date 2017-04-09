@@ -48,6 +48,37 @@ public class GetInfoTask extends AsyncTask<String, Integer, Void> {
         return request;
     }
 
+    private void getAllInfo(String authority, String password) throws URISyntaxException {
+        try {
+            URI uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(authority)
+                    .setPath("/info")
+                    .build();
+
+            HttpUriRequest request = prepareRequest(uri, password);
+
+            HttpResponse response = mClient.execute(request);
+            BasicResponseHandler handler = new BasicResponseHandler();
+            String resp = handler.handleResponse(response);
+
+            String[] parts = resp.split("[\r\n]+");
+            int length = Integer.parseInt(parts[0]);
+            names = new String[length];
+            currentTemps = new float[length];
+            targetTemps = new int[length];
+            hysteresis = new int[length];
+            for (int i = 0; i < length; i++) {
+                names[i] = parts[1 + 4*i];
+                currentTemps[i] = Float.parseFloat(parts[1 + 4*i + 1]);
+                targetTemps[i] = Integer.parseInt(parts[1 + 4*i + 2]);
+                hysteresis[i] = Integer.parseInt(parts[1 + 4*i + 3]);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     private void getNames(String authority, String password) throws URISyntaxException {
         try {
             URI uri = new URIBuilder()
@@ -177,13 +208,7 @@ public class GetInfoTask extends AsyncTask<String, Integer, Void> {
         try {
             Uri uri = Uri.parse(url);
             publishProgress(0);
-            getNames(uri.getAuthority(), pwd);
-            publishProgress(25);
-            getCurrentTemps(uri.getAuthority(), pwd);
-            publishProgress(50);
-            getTargetTemps(uri.getAuthority(), pwd);
-            publishProgress(75);
-            getHysteresis(uri.getAuthority(), pwd);
+            getAllInfo(uri.getAuthority(), pwd);
             publishProgress(100);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
