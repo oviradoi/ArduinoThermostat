@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Termostat</string>
+    <string name="setIpAddress">Set IP Address</string>
+    <string name="setPassword">Set Password</string>
+    <string name="refresh">Refresh</string>
+    <string name="ip_address">IP Address:</string>
+    <string name="set">Set</string>
+    <string name="set_hysteresis">Set Hysteresis:</string>
+    <string name="set_target">Set Target:</string>
+    <string name="hysteresis">Hysteresis:</string>
+    <string name="target_temperature">Target temperature:</string>
+    <string name="current_temperature">Current temperature:</string>
+</resources>
