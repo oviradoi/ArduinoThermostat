@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     private SensorRelayAdapter adapter;
     private ListView listView;
     private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private GetInfoTask getInfoTask;
 
@@ -46,11 +48,18 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
 
         adapter = new SensorRelayAdapter(this, R.layout.sensorrelay_listitem , termostatApp.sensorRelays);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         progressBar = (ProgressBar) findViewById(android.R.id.progress);
         listView = (ListView)findViewById(android.R.id.list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshList();
+            }
+        });
     }
 
     @Override
@@ -101,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     @Override
     public void hideProgress(){
         progressBar.setVisibility(View.INVISIBLE);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -113,16 +123,21 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
             showPassword();
             return true;
         } else if (id == R.id.refresh) {
-            if (getInfoTask == null || getInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
-                getInfoTask = new GetInfoTask(this);
-                SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-                String url = prefs.getString(IP_ADDRESS_PREF_KEY, IP_ADDRESS_PREF_DEFAULT);
-                String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
-                getInfoTask.execute(url, pwd);
-            }
+            swipeRefreshLayout.setRefreshing(true);
+            refreshList();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refreshList() {
+        if (getInfoTask == null || getInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
+            getInfoTask = new GetInfoTask(this);
+            SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+            String url = prefs.getString(IP_ADDRESS_PREF_KEY, IP_ADDRESS_PREF_DEFAULT);
+            String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
+            getInfoTask.execute(url, pwd);
+        }
     }
 
     private void showPassword(){
