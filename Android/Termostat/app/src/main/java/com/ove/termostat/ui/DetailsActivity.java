@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -47,6 +49,8 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
     private Button setTarget;
     private Button setHyst;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     private SetInfoTask setInfoTask;
 
     @Override
@@ -64,6 +68,7 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
         editHyst = (EditText) findViewById(R.id.editHyst);
         setTarget = (Button) findViewById(R.id.setTarget);
         setHyst = (Button) findViewById(R.id.setHyst);
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 
         setTarget.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +135,13 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
             }
         });
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Refresh();
+            }
+        });
+
         Intent intent = getIntent();
         sensorPosition = intent.getIntExtra(EXTRA_POSITION, 0);
         sensorRelay = termostatApp.sensorRelays[sensorPosition];
@@ -192,6 +204,7 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.refresh) {
+            swipeRefreshLayout.setRefreshing(true);
             Refresh();
             return true;
         }
@@ -215,40 +228,37 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
     }
 
     @Override
-    public void setNames(String[] names) {
-        termostatApp.sensorRelays[sensorPosition].setName(names[sensorPosition]);
+    public void setInfo(String[] names, float[] currentTemps, int[] targetTemps, int[] hysteresis) {
+        if (names != null) {
+            termostatApp.sensorRelays[sensorPosition].setName(names[sensorPosition]);
+        }
+        if (currentTemps != null) {
+            termostatApp.sensorRelays[sensorPosition].setCurrentTemp(currentTemps[sensorPosition]);
+        }
+        if (targetTemps != null) {
+            termostatApp.sensorRelays[sensorPosition].setTargetTemp(targetTemps[sensorPosition]);
+        }
+        if (hysteresis != null) {
+            termostatApp.sensorRelays[sensorPosition].setHysteresis(hysteresis[sensorPosition]);
+        }
         refreshUI();
-    }
-
-    @Override
-    public void setCurrentTemps(float[] currentTemps) {
-        termostatApp.sensorRelays[sensorPosition].setCurrentTemp(currentTemps[sensorPosition]);
-        refreshUI();
-    }
-
-    @Override
-    public void setTargetTemps(int[] targetTemps) {
-        termostatApp.sensorRelays[sensorPosition].setTargetTemp(targetTemps[sensorPosition]);
-        refreshUI();
-    }
-
-    @Override
-    public void setHysteresis(int[] hysteresis) {
-        termostatApp.sensorRelays[sensorPosition].setHysteresis(hysteresis[sensorPosition]);
-        refreshUI();
-    }
-
-    @Override
-    public void showProgress(int progress) {
     }
 
     @Override
     public void hideProgress() {
+        new CountDownTimer(1000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
 
+            public void onFinish() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }.start();
     }
 
     @Override
     public void SetInfoComplete(Boolean success) {
+        swipeRefreshLayout.setRefreshing(true);
         Refresh();
     }
 }

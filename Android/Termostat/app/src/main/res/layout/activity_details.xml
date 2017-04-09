@@ -10,98 +10,108 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="wrap_content"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:text="@string/current_temperature"/>
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/current_temperature"/>
 
-    <TextView
-        android:id="@+id/tvCurrentTemp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textEnd"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textStyle="bold"
-        tools:text="x*C" />
+            <TextView
+                android:id="@+id/tvCurrentTemp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="textEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textStyle="bold"
+                tools:text="x*C" />
 
-    <TextView
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="@string/target_temperature"/>
+            <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/target_temperature"/>
 
-    <TextView
-        android:id="@+id/tvTargetTemp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textEnd"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        tools:text="x*C" />
+            <TextView
+                android:id="@+id/tvTargetTemp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="textEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                tools:text="x*C" />
 
-    <TextView
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="@string/hysteresis"/>
+            <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/hysteresis"/>
 
-    <TextView
-        android:id="@+id/tvHyst"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textEnd"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        tools:text="x*C" />
+            <TextView
+                android:id="@+id/tvHyst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="textEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                tools:text="x*C" />
 
-    <TextView
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="@string/set_target"/>
+            <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/set_target"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/editTarget"
-            android:layout_gravity="fill_horizontal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="number"
-            android:imeOptions="actionGo"
-            tools:text="x*C" />
-        <Button
-            android:id="@+id/setTarget"
-            android:layout_gravity="end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/set"/>
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/editTarget"
+                    android:layout_gravity="fill_horizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="number"
+                    android:imeOptions="actionGo"
+                    tools:text="x*C" />
+                <Button
+                    android:id="@+id/setTarget"
+                    android:layout_gravity="end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set"/>
+            </LinearLayout>
 
-    <TextView
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="@string/set_hysteresis"/>
+            <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/set_hysteresis"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/editHyst"
-            android:layout_gravity="fill_horizontal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="number"
-            android:imeOptions="actionGo"
-            tools:text="x*C" />
-        <Button
-            android:id="@+id/setHyst"
-            android:layout_gravity="end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/set"/>
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/editHyst"
+                    android:layout_gravity="fill_horizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="number"
+                    android:imeOptions="actionGo"
+                    tools:text="x*C" />
+                <Button
+                    android:id="@+id/setHyst"
+                    android:layout_gravity="end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set"/>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

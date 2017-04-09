@@ -67,39 +67,28 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     }
 
     @Override
-    public void setNames(String[] names){
-        for(int i=0;i<names.length;i++){
-            termostatApp.sensorRelays[i].setName(names[i]);
+    public void setInfo(String[] names, float[] currentTemps, int[] targetTemps, int[] hysteresis) {
+        if(names != null) {
+            for (int i = 0; i < names.length; i++) {
+                termostatApp.sensorRelays[i].setName(names[i]);
+            }
+        }
+        if(currentTemps != null) {
+            for (int i = 0; i < currentTemps.length; i++) {
+                termostatApp.sensorRelays[i].setCurrentTemp(currentTemps[i]);
+            }
+        }
+        if(targetTemps != null) {
+            for (int i = 0; i < targetTemps.length; i++) {
+                termostatApp.sensorRelays[i].setTargetTemp(targetTemps[i]);
+            }
+        }
+        if(hysteresis != null) {
+            for (int i = 0; i < hysteresis.length; i++) {
+                termostatApp.sensorRelays[i].setHysteresis(hysteresis[i]);
+            }
         }
         adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void setCurrentTemps(float[] currentTemps){
-        for(int i=0;i<currentTemps.length;i++){
-            termostatApp.sensorRelays[i].setCurrentTemp(currentTemps[i]);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void setTargetTemps(int[] targetTemps){
-        for(int i=0;i<targetTemps.length;i++){
-            termostatApp.sensorRelays[i].setTargetTemp(targetTemps[i]);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void setHysteresis(int[] hysteresis){
-        for(int i=0;i<hysteresis.length;i++){
-            termostatApp.sensorRelays[i].setHysteresis(hysteresis[i]);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void showProgress(int percentage){
     }
 
     @Override
