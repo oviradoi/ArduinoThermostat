@@ -161,7 +161,7 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
         if(!TextUtils.isEmpty(targetText)) {
             if (setInfoTask == null || setInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
                 setInfoTask = new SetInfoTask(this);
-                SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
                 String url = prefs.getString(MainActivity.IP_ADDRESS_PREF_KEY, MainActivity.IP_ADDRESS_PREF_DEFAULT);
                 String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
                 setInfoTask.execute(SetInfoTask.SET_TARGET, url, (sensorPosition + 1) + "", targetText, pwd);
@@ -180,7 +180,7 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
         if(!TextUtils.isEmpty(hystText)) {
             if (setInfoTask == null || setInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
                 setInfoTask = new SetInfoTask(this);
-                SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
                 String url = prefs.getString(MainActivity.IP_ADDRESS_PREF_KEY, MainActivity.IP_ADDRESS_PREF_DEFAULT);
                 String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
                 setInfoTask.execute(SetInfoTask.SET_HYST, url, (sensorPosition + 1) + "", hystText, pwd);
@@ -214,7 +214,7 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
     private void Refresh(){
         if (getInfoTask == null || getInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
             getInfoTask = new GetInfoTask(this);
-            SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
             String url = prefs.getString(MainActivity.IP_ADDRESS_PREF_KEY, MainActivity.IP_ADDRESS_PREF_DEFAULT);
             String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
             getInfoTask.execute(url, pwd);

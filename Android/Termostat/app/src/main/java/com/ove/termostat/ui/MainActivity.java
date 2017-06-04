@@ -23,6 +23,7 @@ import com.ove.termostat.model.GetInfoTask;
 
 public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoListener, ListView.OnItemClickListener {
 
+    public static final String SHARED_PREFS_NAME = "TERMOSTAT_PREFS";
     public static final String IP_ADDRESS_PREF_KEY = "IP_PREF";
     public static final String IP_ADDRESS_PREF_DEFAULT = "192.168.2.145";
 
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     private void refreshList() {
         if (getInfoTask == null || getInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
             getInfoTask = new GetInfoTask(this);
-            SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
             String url = prefs.getString(IP_ADDRESS_PREF_KEY, IP_ADDRESS_PREF_DEFAULT);
             String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
             getInfoTask.execute(url, pwd);
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     }
 
     private void showPassword(){
-        final SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+        final SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         String pwd = prefs.getString(PASSWORD_PREF_KEY, PASSWORD_PREF_DEFAULT);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     }
 
     private void showSettings(){
-        final SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+        final SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         String ip = prefs.getString(IP_ADDRESS_PREF_KEY, IP_ADDRESS_PREF_DEFAULT);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
