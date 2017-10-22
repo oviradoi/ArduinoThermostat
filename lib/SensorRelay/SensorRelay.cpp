@@ -37,6 +37,7 @@ void SensorRelay::readTemps()
   }
   else
   {
+    _hasCurrentTemp = false;
     turnRelayOn();
   }
 }
