@@ -27,7 +27,7 @@ protected:
   bool _editType;
 
   const float _minTemp = 10;
-  const float _maxTemp = 80;
+  const float _maxTemp = 95;
   const float _minHyst = 0;
   const float _maxHyst = 9;
 
