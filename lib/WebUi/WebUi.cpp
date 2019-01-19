@@ -8,7 +8,7 @@
 #include <WebServer.h>
 
 static byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-static IPAddress ipadr(192,168,2,145);
+static IPAddress ipadr(192,168,1,145);
 WebServer server("", 80);
 
 static SensorRelay** _srs;
