@@ -3,10 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.ove.myapplication.Termostat">
+    <group android:id="@+id/localExternalGroup"
+        android:checkableBehavior="single">
+        <item android:id="@+id/action_UseLocalIp"
+            app:showAsAction="never"
+            android:title="@string/useLocalIp"/>
+        <item android:id="@+id/action_UseExternalIp"
+            app:showAsAction="never"
+            android:title="@string/useExternalIp"/>
+    </group>
     <item
-        android:id="@+id/action_setIpAddress"
+        android:id="@+id/action_setIpAddressLocal"
         android:orderInCategory="100"
-        android:title="@string/setIpAddress"
+        android:title="@string/setLocalIp"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_setIpAddressExternal"
+        android:orderInCategory="100"
+        android:title="@string/setExternalIp"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_setPassword"

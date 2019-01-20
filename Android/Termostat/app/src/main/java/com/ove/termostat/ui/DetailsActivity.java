@@ -29,6 +29,13 @@ import com.ove.termostat.model.SetInfoTask;
 
 import java.util.Locale;
 
+import static com.ove.termostat.ui.MainActivity.IP_ADDRESS_PREF_EXTERNAL_DEFAULT;
+import static com.ove.termostat.ui.MainActivity.IP_ADDRESS_PREF_EXTERNAL_KEY;
+import static com.ove.termostat.ui.MainActivity.IP_ADDRESS_PREF_LOCAL_DEFAULT;
+import static com.ove.termostat.ui.MainActivity.IP_ADDRESS_PREF_LOCAL_KEY;
+import static com.ove.termostat.ui.MainActivity.IP_ADDRESS_PREF_TYPE_DEFAULT;
+import static com.ove.termostat.ui.MainActivity.IP_ADDRESS_PREF_TYPE_KEY;
+
 public class DetailsActivity extends AppCompatActivity implements GetInfoTask.InfoListener, SetInfoTask.SetInfoListener {
 
     public static String EXTRA_POSITION = "Position";
@@ -162,8 +169,15 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
             if (setInfoTask == null || setInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
                 setInfoTask = new SetInfoTask(this);
                 SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-                String url = prefs.getString(MainActivity.IP_ADDRESS_PREF_KEY, MainActivity.IP_ADDRESS_PREF_DEFAULT);
                 String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
+                MainActivity.IpAddressType ipType = MainActivity.IpAddressType.valueOf(prefs.getString(IP_ADDRESS_PREF_TYPE_KEY, IP_ADDRESS_PREF_TYPE_DEFAULT));
+                String url = null;
+                if (ipType == MainActivity.IpAddressType.Local) {
+                    url = prefs.getString(IP_ADDRESS_PREF_LOCAL_KEY, IP_ADDRESS_PREF_LOCAL_DEFAULT);
+                } else if (ipType == MainActivity.IpAddressType.External) {
+                    url = prefs.getString(IP_ADDRESS_PREF_EXTERNAL_KEY, IP_ADDRESS_PREF_EXTERNAL_DEFAULT);
+                }
+
                 setInfoTask.execute(SetInfoTask.SET_TARGET, url, (sensorPosition + 1) + "", targetText, pwd);
             }
         }
@@ -181,7 +195,7 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
             if (setInfoTask == null || setInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
                 setInfoTask = new SetInfoTask(this);
                 SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-                String url = prefs.getString(MainActivity.IP_ADDRESS_PREF_KEY, MainActivity.IP_ADDRESS_PREF_DEFAULT);
+                String url = prefs.getString(IP_ADDRESS_PREF_LOCAL_KEY, IP_ADDRESS_PREF_LOCAL_DEFAULT);
                 String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
                 setInfoTask.execute(SetInfoTask.SET_HYST, url, (sensorPosition + 1) + "", hystText, pwd);
             }
@@ -215,7 +229,7 @@ public class DetailsActivity extends AppCompatActivity implements GetInfoTask.In
         if (getInfoTask == null || getInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
             getInfoTask = new GetInfoTask(this);
             SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-            String url = prefs.getString(MainActivity.IP_ADDRESS_PREF_KEY, MainActivity.IP_ADDRESS_PREF_DEFAULT);
+            String url = prefs.getString(IP_ADDRESS_PREF_LOCAL_KEY, IP_ADDRESS_PREF_LOCAL_DEFAULT);
             String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
             getInfoTask.execute(url, pwd);
         }

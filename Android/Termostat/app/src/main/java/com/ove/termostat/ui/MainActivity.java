@@ -24,8 +24,12 @@ import com.ove.termostat.model.GetInfoTask;
 public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoListener, ListView.OnItemClickListener {
 
     public static final String SHARED_PREFS_NAME = "TERMOSTAT_PREFS";
-    public static final String IP_ADDRESS_PREF_KEY = "IP_PREF";
-    public static final String IP_ADDRESS_PREF_DEFAULT = "192.168.2.145";
+    public static final String IP_ADDRESS_PREF_LOCAL_KEY = "IP_PREF_LOCAL";
+    public static final String IP_ADDRESS_PREF_LOCAL_DEFAULT = "192.168.2.145";
+    public static final String IP_ADDRESS_PREF_EXTERNAL_KEY = "IP_PREF_EXTERNAL";
+    public static final String IP_ADDRESS_PREF_EXTERNAL_DEFAULT = "";
+    public static final String IP_ADDRESS_PREF_TYPE_KEY = "IP_PREF_TYPE";
+    public static final String IP_ADDRESS_PREF_TYPE_DEFAULT = "Local";
 
     public static final String PASSWORD_PREF_KEY = "PWD_PREF";
     public static final String PASSWORD_PREF_DEFAULT = "Test";
@@ -35,8 +39,11 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     private SensorRelayAdapter adapter;
     private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Menu optionsMenu;
 
     private GetInfoTask getInfoTask;
+
+    public enum IpAddressType { Local, External };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_termostat, menu);
+        optionsMenu = menu;
+        refreshIpAddressTypeMenu();
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -107,13 +116,23 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_setIpAddress) {
-            showSettings();
+        if (id == R.id.action_setIpAddressLocal) {
+            showSettingsLocal();
+            return true;
+        } else if (id == R.id.action_setIpAddressExternal) {
+            showSettingsExternal();
             return true;
         } else if (id == R.id.action_setPassword) {
             showPassword();
             return true;
-        } else if (id == R.id.refresh) {
+        } else if (id == R.id.action_UseLocalIp){
+            setIpAddress(IpAddressType.Local);
+            return true;
+        } else if (id == R.id.action_UseExternalIp){
+            setIpAddress(IpAddressType.External);
+            return true;
+        }
+        else if (id == R.id.refresh) {
             swipeRefreshLayout.setRefreshing(true);
             refreshList();
             return true;
@@ -121,13 +140,40 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
         return super.onOptionsItemSelected(item);
     }
 
+    private void setIpAddress(IpAddressType type) {
+        final SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(IP_ADDRESS_PREF_TYPE_KEY, type.toString());
+        editor.apply();
+        refreshIpAddressTypeMenu();
+    }
+
     private void refreshList() {
         if (getInfoTask == null || getInfoTask.getStatus() != AsyncTask.Status.RUNNING) {
             getInfoTask = new GetInfoTask(this);
             SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-            String url = prefs.getString(IP_ADDRESS_PREF_KEY, IP_ADDRESS_PREF_DEFAULT);
+            IpAddressType ipType = IpAddressType.valueOf(prefs.getString(IP_ADDRESS_PREF_TYPE_KEY, IP_ADDRESS_PREF_TYPE_DEFAULT));
             String pwd = prefs.getString(MainActivity.PASSWORD_PREF_KEY, MainActivity.PASSWORD_PREF_DEFAULT);
+            String url = null;
+            if (ipType == IpAddressType.Local) {
+                url = prefs.getString(IP_ADDRESS_PREF_LOCAL_KEY, IP_ADDRESS_PREF_LOCAL_DEFAULT);
+            } else if (ipType == IpAddressType.External) {
+                url = prefs.getString(IP_ADDRESS_PREF_EXTERNAL_KEY, IP_ADDRESS_PREF_EXTERNAL_DEFAULT);
+            }
+
             getInfoTask.execute(url, pwd);
+        }
+    }
+
+    private void refreshIpAddressTypeMenu() {
+        SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        IpAddressType type = IpAddressType.valueOf(prefs.getString(IP_ADDRESS_PREF_TYPE_KEY, IP_ADDRESS_PREF_TYPE_DEFAULT));
+        if (type == IpAddressType.External) {
+            MenuItem externalMenuItem = optionsMenu.findItem(R.id.action_UseExternalIp);
+            externalMenuItem.setChecked(true);
+        } else if (type == IpAddressType.Local) {
+            MenuItem localMenuItem = optionsMenu.findItem(R.id.action_UseLocalIp);
+            localMenuItem.setChecked(true);
         }
     }
 
@@ -158,12 +204,12 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
         builder.create().show();
     }
 
-    private void showSettings(){
+    private void showSettingsLocal(){
         final SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-        String ip = prefs.getString(IP_ADDRESS_PREF_KEY, IP_ADDRESS_PREF_DEFAULT);
+        String ip = prefs.getString(IP_ADDRESS_PREF_LOCAL_KEY, IP_ADDRESS_PREF_LOCAL_DEFAULT);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.setIpAddress);
+        builder.setTitle(R.string.setLocalIp);
         builder.setMessage(R.string.ip_address);
         final EditText et = new EditText(this);
         et.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -173,7 +219,34 @@ public class MainActivity extends AppCompatActivity implements GetInfoTask.InfoL
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putString(IP_ADDRESS_PREF_KEY, et.getText().toString());
+                editor.putString(IP_ADDRESS_PREF_LOCAL_KEY, et.getText().toString());
+                editor.apply();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.create().show();
+    }
+
+    private void showSettingsExternal(){
+        final SharedPreferences prefs = getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        String ip = prefs.getString(IP_ADDRESS_PREF_EXTERNAL_KEY, IP_ADDRESS_PREF_EXTERNAL_DEFAULT);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.setExternalIp);
+        builder.setMessage(R.string.ip_address);
+        final EditText et = new EditText(this);
+        et.setInputType(InputType.TYPE_CLASS_TEXT);
+        et.setText(ip);
+        builder.setView(et);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(IP_ADDRESS_PREF_EXTERNAL_KEY, et.getText().toString());
                 editor.apply();
             }
         });

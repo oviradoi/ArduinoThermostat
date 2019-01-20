@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Termostat</string>
-    <string name="setIpAddress">Set IP Address</string>
+    <string name="useLocalIp">Use Local IP</string>
+    <string name="useExternalIp">Use External IP</string>
+    <string name="setExternalIp">Set External IP</string>
+    <string name="setLocalIp">Set Local IP</string>
     <string name="setPassword">Set Password</string>
     <string name="refresh">Refresh</string>
     <string name="ip_address">IP Address:</string>
