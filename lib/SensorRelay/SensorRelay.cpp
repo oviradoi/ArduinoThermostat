@@ -38,13 +38,21 @@ void SensorRelay::readTemps()
     // wait until the conversion is complete
     int maxTime = _ds.millisToWaitForConversion(_ds.getResolution());
     unsigned long startTime = millis();
-    while (!_ds.isConversionComplete() || (startTime + maxTime > millis() || millis() < startTime))
+    while (!_ds.isConversionComplete())
     {
+      if ((startTime + maxTime) < millis() || millis() < startTime)
+      {
+        // Timeout!
+        _hasCurrentTemp = false;
+        break;
+      }
       delay(10);
     }
+  }
 
+  if (_hasCurrentTemp)
+  {
     _currentTemp = _ds.getTempCByIndex(0);
-    _hasCurrentTemp = true;
 
     RelayChange change = getRelayCondition();
     if (change == RelayChange::On)
