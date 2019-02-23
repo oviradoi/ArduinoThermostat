@@ -135,13 +135,13 @@ void loop()
   readButton();
   editTargetTemp();
 
+  HandleWebClient();
+
   for (SensorRelay *sr : srs)
   {
     sr->readTemps();
     sr->print();
   }
-
-  HandleWebClient();
 
   unsigned long currentTime = millis();
   if (currentTime > lastLightTime && currentTime - lastLightTime < 60000)
