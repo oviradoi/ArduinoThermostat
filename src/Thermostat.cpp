@@ -20,7 +20,7 @@ const int relay3 = 7;
 const int relay4 = 8;
 
 // LCD
-LiquidCrystal_I2C lcd(0x27,20,4);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 // SensorRelays
 SensorRelay sr1("Puffer", 1, senzor1, relay1, lcd);
@@ -28,10 +28,10 @@ SensorRelayDepend sr2("Soba", 2, senzor2, relay2, lcd, sr1, Formula2);
 SensorRelayDepend sr3("Solar", 3, senzor3, relay3, lcd, sr1, Formula2);
 SensorRelayDepend sr4("A.C.M.", 4, senzor4, relay4, lcd, sr1, Formula1);
 
-SensorRelay* srs[] = { &sr1, &sr2, &sr3, &sr4 };
+SensorRelay *srs[] = {&sr1, &sr2, &sr3, &sr4};
 
 // Web password (base64 encoded), max 36 characters
-const char * webPassword = "VGVzdA==";
+const char *webPassword = "VGVzdA==";
 
 // Current target
 int currentTarget = -1;
@@ -40,7 +40,7 @@ volatile bool buttonPressed = false;
 
 void onPinChange(byte changeKind)
 {
-  if(changeKind==0)
+  if (changeKind == 0)
   {
     buttonPressed = true;
     lastMenuTime = millis();
@@ -53,28 +53,28 @@ PciListenerImp listener(buton, onPinChange);
 
 void readButton()
 {
-  if(buttonPressed)
+  if (buttonPressed)
   {
     currentTarget++;
-    if(currentTarget > 7)
+    if (currentTarget > 7)
     {
       currentTarget = -1;
     }
     buttonPressed = false;
   }
-  if(currentTarget != prevTarget)
+  if (currentTarget != prevTarget)
   {
     // the button has changed
-    if(prevTarget != -1)
+    if (prevTarget != -1)
     {
       int prevSensorIdx = prevTarget / 2;
       srs[prevSensorIdx]->setEditMode(false, false);
     }
-    if(currentTarget != -1)
+    if (currentTarget != -1)
     {
       int sensorIdx = currentTarget / 2;
       int editType = currentTarget % 2;
-      srs[sensorIdx]->setEditMode(true, editType==1);
+      srs[sensorIdx]->setEditMode(true, editType == 1);
     }
     prevTarget = currentTarget;
     rotaryHalfSteps = 0;
@@ -83,7 +83,8 @@ void readButton()
   {
     unsigned long currentTime = millis();
 
-    if(currentTime < lastMenuTime || currentTime - lastMenuTime > 5000){
+    if (currentTime < lastMenuTime || currentTime - lastMenuTime > 5000)
+    {
 
       // Exit menu
       srs[currentTarget / 2]->setEditMode(false, false);
@@ -94,26 +95,28 @@ void readButton()
   }
 }
 
-void editTargetTemp(){
-  for(SensorRelay* sr : srs){
-    if(sr->isEditMode()){
+void editTargetTemp()
+{
+  for (SensorRelay *sr : srs)
+  {
+    if (sr->isEditMode())
+    {
       float dist = (float)rotaryHalfSteps / 2.;
       sr->editTemp(dist);
     }
   }
 }
 
-void setup(void) {
-  Serial.begin(9600);
-  Serial.println("Start");
-
+void setup(void)
+{
   lcd.init();
   lcd.backlight();
   pinMode(buton, INPUT);
 
   InitWebUi(srs, 4, webPassword);
 
-  for(SensorRelay* sr : srs){
+  for (SensorRelay *sr : srs)
+  {
     sr->init();
   }
 
@@ -122,23 +125,26 @@ void setup(void) {
   initEncoder();
 }
 
-void loop(){
-
-  for(SensorRelay* sr : srs){
-    sr->readTemps();
+void loop()
+{
+  for (SensorRelay *sr : srs)
+  {
+    sr->requestTemps();
   }
 
   readButton();
   editTargetTemp();
 
-  for(SensorRelay* sr : srs){
+  for (SensorRelay *sr : srs)
+  {
+    sr->readTemps();
     sr->print();
   }
 
   HandleWebClient();
 
   unsigned long currentTime = millis();
-  if(currentTime > lastLightTime && currentTime - lastLightTime < 60000)
+  if (currentTime > lastLightTime && currentTime - lastLightTime < 60000)
   {
     lcd.backlight();
   }

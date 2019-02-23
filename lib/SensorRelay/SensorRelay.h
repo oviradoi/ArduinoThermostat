@@ -1,12 +1,21 @@
 #pragma once
+
+#define REQUIRESALARMS false
+
 #include <Arduino.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <LiquidCrystal_I2C.h>
 
-enum RelayChange { None, On, Off };
+enum RelayChange
+{
+  None,
+  On,
+  Off
+};
 
-class SensorRelay {
+class SensorRelay
+{
 protected:
   int _idx;
   int _pinSensor;
@@ -22,7 +31,7 @@ protected:
 
   bool _isRelayOn;
 
-  const char* _name;
+  const char *_name;
   bool _isEditMode;
   bool _editType;
 
@@ -33,31 +42,33 @@ protected:
 
   OneWire _ow;
   DallasTemperature _ds;
-  LiquidCrystal_I2C& _lcd;
+  LiquidCrystal_I2C &_lcd;
+
 public:
-  SensorRelay(const char* name, int idx, int pinSensor, int pinRelay, LiquidCrystal_I2C& lcd);
+  SensorRelay(const char *name, int idx, int pinSensor, int pinRelay, LiquidCrystal_I2C &lcd);
 
   void init();
+  void requestTemps();
   void readTemps();
   void print();
   void editTemp(float dist);
 
   virtual RelayChange getRelayCondition();
 
-  const char* getName() { return _name; }
+  const char *getName() { return _name; }
 
   float getCurrentTemp() const { return _currentTemp; }
 
   int getTargetTemp() const { return _targetTemp; }
   void setTargetTemp(int target)
   {
-    _targetTemp = min(max(target, _minTemp),_maxTemp);
+    _targetTemp = min(max(target, _minTemp), _maxTemp);
   }
 
   int getHysteresis() const { return _hysteresis; }
   void setHysteresis(int hyst)
   {
-    _hysteresis = min(max(hyst, _minHyst),_maxHyst);
+    _hysteresis = min(max(hyst, _minHyst), _maxHyst);
   }
 
   bool isEditMode() const { return _isEditMode; }
@@ -66,7 +77,15 @@ public:
   void saveData();
   void loadData();
 
-  void turnRelayOn(){_isRelayOn = true; digitalWrite(_pinRelay, LOW);}
-  void turnRelayOff(){_isRelayOn = false; digitalWrite(_pinRelay, HIGH);}
-  bool isRelayOn(){return _isRelayOn;}
+  void turnRelayOn()
+  {
+    _isRelayOn = true;
+    digitalWrite(_pinRelay, LOW);
+  }
+  void turnRelayOff()
+  {
+    _isRelayOn = false;
+    digitalWrite(_pinRelay, HIGH);
+  }
+  bool isRelayOn() { return _isRelayOn; }
 };

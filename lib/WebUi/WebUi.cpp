@@ -5,22 +5,23 @@
 #include <Ethernet.h>
 
 #define WEBDUINO_FAVICON_DATA ""
+#define WEBDUINO_SUPRESS_SERVER_HEADER
 #include <WebServer.h>
 
-static byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-static IPAddress ipadr(192,168,1,145);
+static byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+static IPAddress ipadr(192, 168, 1, 145);
 WebServer server("", 80);
 
-static SensorRelay** _srs;
+static SensorRelay **_srs;
 static int _sensorCount;
-static const char* _base64pwd = nullptr;
+static const char *_base64pwd = nullptr;
 
 #define NAMELEN 32
 #define VALUELEN 32
 char name[NAMELEN];
 char value[VALUELEN];
 
-int getParam(WebServer&server, char* url_tail)
+int getParam(WebServer &server, char *url_tail)
 {
   URLPARAM_RESULT rc;
   rc = server.nextURLparam(&url_tail, name, NAMELEN, value, VALUELEN);
@@ -38,11 +39,11 @@ void getInfoCmd(WebServer &server, WebServer::ConnectionType type, char *url_tai
   {
     server.httpSuccess();
     server.println(_sensorCount);
-    for(int i=0;i<_sensorCount;i++)
+    for (int i = 0; i < _sensorCount; i++)
     {
       // Print name
       server.print(_srs[i]->getName());
-      if(_srs[i]->isRelayOn())
+      if (_srs[i]->isRelayOn())
       {
         server.print("*");
       }
@@ -66,16 +67,16 @@ void targetCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail
   if (type == WebServer::POST && server.checkCredentials(_base64pwd))
   {
     int param = getParam(server, url_tail);
-    if (param >= 1 && param <=4)
+    if (param >= 1 && param <= 4)
     {
-      while(server.readPOSTparam(name, NAMELEN, value, VALUELEN))
+      while (server.readPOSTparam(name, NAMELEN, value, VALUELEN))
       {
-        if(strcmp(name, "temp")==0)
+        if (strcmp(name, "temp") == 0)
         {
           String s(value);
           int target = s.toInt();
-          _srs[param-1]->setTargetTemp(target);
-          _srs[param-1]->saveData();
+          _srs[param - 1]->setTargetTemp(target);
+          _srs[param - 1]->saveData();
           server.httpSuccess();
           return;
         }
@@ -94,16 +95,16 @@ void hystCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
   if (type == WebServer::POST && server.checkCredentials(_base64pwd))
   {
     int param = getParam(server, url_tail);
-    if (param >= 1 && param <=4)
+    if (param >= 1 && param <= 4)
     {
-      while(server.readPOSTparam(name, NAMELEN, value, VALUELEN))
+      while (server.readPOSTparam(name, NAMELEN, value, VALUELEN))
       {
-        if(strcmp(name, "hyst")==0)
+        if (strcmp(name, "hyst") == 0)
         {
           String s(value);
           int hyst = s.toInt();
-          _srs[param-1]->setHysteresis(hyst);
-          _srs[param-1]->saveData();
+          _srs[param - 1]->setHysteresis(hyst);
+          _srs[param - 1]->saveData();
           server.httpSuccess();
           return;
         }
@@ -117,7 +118,7 @@ void hystCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, 
   }
 }
 
-void InitWebUi(SensorRelay** srs, int sensorCount, const char* base64Pwd)
+void InitWebUi(SensorRelay **srs, int sensorCount, const char *base64Pwd)
 {
   _srs = srs;
   _sensorCount = sensorCount;

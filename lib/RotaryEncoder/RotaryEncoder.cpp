@@ -20,16 +20,16 @@ volatile unsigned long lastLightTime = 0;
 
 void int0()
 {
-  if ( micros() - int0time < threshold )
+  if (micros() - int0time < threshold)
     return;
   int0history = int0signal;
-  int0signal = bitRead(PIND,encoder1);
-  if ( int0history==int0signal )
+  int0signal = bitRead(PIND, encoder1);
+  if (int0history == int0signal)
     return;
   int0time = micros();
   lastMenuTime = millis();
   lastLightTime = millis();
-  if ( int0signal == int1signal )
+  if (int0signal == int1signal)
   {
     rotaryHalfSteps++;
   }
@@ -41,11 +41,11 @@ void int0()
 
 void int1()
 {
-  if ( micros() - int1time < threshold )
+  if (micros() - int1time < threshold)
     return;
   int1history = int1signal;
-  int1signal = bitRead(PIND,encoder2);
-  if ( int1history==int1signal )
+  int1signal = bitRead(PIND, encoder2);
+  if (int1history == int1signal)
     return;
   int1time = micros();
 }
