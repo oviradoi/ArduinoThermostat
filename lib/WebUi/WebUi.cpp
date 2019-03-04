@@ -1,5 +1,7 @@
 #include "WebUi.h"
 
+//#if BUILD_WEBUI
+
 #include <Arduino.h>
 #include <SPI.h>
 #include <Ethernet.h>
@@ -140,3 +142,5 @@ void HandleWebClient()
 {
   server.processConnection();
 }
+
+//#endif

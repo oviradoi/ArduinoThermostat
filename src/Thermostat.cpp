@@ -1,14 +1,26 @@
 #include <Arduino.h>
 #include <OneWire.h>
 #include <LiquidCrystal_I2C.h>
-#include <PciManager.h>
-#include <PciListenerImp.h>
 #include "SensorRelay.h"
 #include "SensorRelayDepend.h"
 #include "RotaryEncoder.h"
+
+#ifndef BUILD_ESP32
 #include "WebUi.h"
+#endif
 
 // Pins
+#if BUILD_ESP32
+const int buton = 4;
+const int senzor1 = 33;
+const int senzor2 = 32;
+const int senzor3 = 25;
+const int senzor4 = 23;
+const int relay1 = 13;
+const int relay2 = 14;
+const int relay3 = 27;
+const int relay4 = 26;
+#else
 const int buton = 9;
 const int senzor1 = A0;
 const int senzor2 = A1;
@@ -18,6 +30,7 @@ const int relay1 = 5;
 const int relay2 = 6;
 const int relay3 = 7;
 const int relay4 = 8;
+#endif
 
 // LCD
 LiquidCrystal_I2C lcd(0x27, 20, 4);
@@ -38,18 +51,12 @@ int currentTarget = -1;
 int prevTarget = -1;
 volatile bool buttonPressed = false;
 
-void onPinChange(byte changeKind)
+void onPinChange()
 {
-  if (changeKind == 0)
-  {
     buttonPressed = true;
     lastMenuTime = millis();
     lastLightTime = millis();
-  }
 }
-
-// Interrupt listener
-PciListenerImp listener(buton, onPinChange);
 
 void readButton()
 {
@@ -113,14 +120,16 @@ void setup(void)
   lcd.backlight();
   pinMode(buton, INPUT);
 
+  attachInterrupt(digitalPinToInterrupt(buton), onPinChange, FALLING);
+
+#ifndef BUILD_ESP32
   InitWebUi(srs, 4, webPassword);
+#endif
 
   for (SensorRelay *sr : srs)
   {
     sr->init();
   }
-
-  PciManager.registerListener(buton, &listener);
 
   initEncoder();
 }
@@ -135,7 +144,9 @@ void loop()
   readButton();
   editTargetTemp();
 
+#ifndef BUILD_ESP32
   HandleWebClient();
+#endif
 
   for (SensorRelay *sr : srs)
   {

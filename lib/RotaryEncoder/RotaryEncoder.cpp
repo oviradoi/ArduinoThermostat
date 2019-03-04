@@ -1,8 +1,13 @@
 #include "RotaryEncoder.h"
 
 // Pins for the encoder
+#if BUILD_ESP32
+const int encoder1 = 16;
+const int encoder2 = 17;
+#else
 const int encoder1 = 2;
 const int encoder2 = 3;
+#endif
 
 const unsigned long threshold = 5000;
 volatile long rotaryHalfSteps = 0;
@@ -19,11 +24,15 @@ volatile unsigned long lastMenuTime = 0;
 volatile unsigned long lastLightTime = 0;
 
 void int0()
-{
+{  
   if (micros() - int0time < threshold)
     return;
   int0history = int0signal;
+#if BUILD_ESP32
+  int0signal = digitalRead(encoder1);
+#else
   int0signal = bitRead(PIND, encoder1);
+#endif
   if (int0history == int0signal)
     return;
   int0time = micros();
@@ -44,7 +53,11 @@ void int1()
   if (micros() - int1time < threshold)
     return;
   int1history = int1signal;
+#if BUILD_ESP32
+  int1signal = digitalRead(encoder2);
+#else
   int1signal = bitRead(PIND, encoder2);
+#endif
   if (int1history == int1signal)
     return;
   int1time = micros();

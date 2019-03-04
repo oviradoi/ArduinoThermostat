@@ -172,12 +172,27 @@ void SensorRelay::print()
 
 void SensorRelay::saveData()
 {
+#if BUILD_ESP32
+  EEPROM.begin(16 * sizeof(float));
   EEPROM.write(2 * _idx, _targetTemp);
   EEPROM.write(2 * _idx + 1, _hysteresis);
+  EEPROM.commit();
+  EEPROM.end();
+#else
+  EEPROM.write(2 * _idx, _targetTemp);
+  EEPROM.write(2 * _idx + 1, _hysteresis);
+#endif
 }
 
 void SensorRelay::loadData()
 {
+#if BUILD_ESP32
+  EEPROM.begin(16 * sizeof(float));
   setTargetTemp(EEPROM.read(2 * _idx));
   setHysteresis(EEPROM.read(2 * _idx + 1));
+  EEPROM.end();
+#else
+  setTargetTemp(EEPROM.read(2 * _idx));
+  setHysteresis(EEPROM.read(2 * _idx + 1));
+#endif
 }

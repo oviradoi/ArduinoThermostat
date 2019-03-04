@@ -1,6 +1,14 @@
 #include "SensorRelayDepend.h"
 #include <Arduino.h>
 
+#ifndef min
+#define min(a,b) ((a)<(b)?(a):(b))
+#endif
+
+#ifndef max
+#define max(a,b) ((a)>(b)?(a):(b))
+#endif
+
 SensorRelayDepend::SensorRelayDepend(
   const char* name, int idx, int pinSensor, int pinRelay, LiquidCrystal_I2C& lcd,
   const SensorRelay& sensorOther, FormulaType formulaType):

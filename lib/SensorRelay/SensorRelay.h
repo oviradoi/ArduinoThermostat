@@ -5,6 +5,14 @@
 #include <DallasTemperature.h>
 #include <LiquidCrystal_I2C.h>
 
+#ifndef min
+#define min(a,b) ((a)<(b)?(a):(b))
+#endif
+
+#ifndef max
+#define max(a,b) ((a)>(b)?(a):(b))
+#endif
+
 enum RelayChange
 {
   None,
