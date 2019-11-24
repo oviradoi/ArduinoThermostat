@@ -32,7 +32,7 @@ RelayChange SensorRelayDepend::getRelayCondition()
   }
   else if (_formulaType == Formula2)
   {
-    float setTemp = max(_sensorOther.getCurrentTemp(), _targetTemp);
+    float setTemp = (_currentTemp > 70.0) ? _targetTemp : max(_sensorOther.getCurrentTemp(), _targetTemp);
     if(_currentTemp > setTemp + _hysteresis)
     {
       return RelayChange::On;
