@@ -7,7 +7,7 @@
 #include "SensorRelayCasa.h"
 #include "SensorRelaySoba.h"
 #include "RotaryEncoder.h"
-#include "WebUi.h"
+//#include "WebUi.h"
 
 // Pins
 const int buton = 9;
@@ -32,7 +32,7 @@ SensorRelayCasa sr4("CS", 4, senzor4, relay4, lcd, sr1);
 SensorRelay *srs[] = {&sr1, &sr2, &sr3, &sr4};
 
 // Web password (base64 encoded), max 36 characters
-const char *webPassword = "VGVzdA==";
+//const char *webPassword = "VGVzdA==";
 
 // Current target
 int currentTarget = -1;
@@ -114,7 +114,7 @@ void setup(void)
   lcd.backlight();
   pinMode(buton, INPUT);
 
-  InitWebUi(srs, 4, webPassword);
+  //InitWebUi(srs, 4, webPassword);
 
   for (SensorRelay *sr : srs)
   {
@@ -136,7 +136,7 @@ void loop()
   readButton();
   editTargetTemp();
 
-  HandleWebClient();
+  //HandleWebClient();
 
   for (SensorRelay *sr : srs)
   {
