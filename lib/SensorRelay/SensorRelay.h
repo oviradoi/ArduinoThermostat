@@ -85,5 +85,5 @@ public:
     _isRelayOn = false;
     digitalWrite(_pinRelay, HIGH);
   }
-  bool isRelayOn() { return _isRelayOn; }
+  bool isRelayOn() const { return _isRelayOn; }
 };

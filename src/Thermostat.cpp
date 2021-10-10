@@ -4,7 +4,8 @@
 #include <PciManager.h>
 #include <PciListenerImp.h>
 #include "SensorRelay.h"
-#include "SensorRelayDepend.h"
+#include "SensorRelayCasa.h"
+#include "SensorRelaySoba.h"
 #include "RotaryEncoder.h"
 #include "WebUi.h"
 
@@ -24,9 +25,9 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 // SensorRelays
 SensorRelay sr1("Puffer", 1, senzor1, relay1, lcd);
-SensorRelayDepend sr2("Soba", 2, senzor2, relay2, lcd, sr1, Formula2);
-SensorRelayDepend sr3("Solar", 3, senzor3, relay3, lcd, sr1, Formula2);
-SensorRelayDepend sr4("A.C.M.", 4, senzor4, relay4, lcd, sr1, Formula1);
+SensorRelaySoba sr2("Soba", 2, senzor2, relay2, lcd, sr1);
+SensorRelayCasa sr3("Buc", 3, senzor3, relay3, lcd, sr1);
+SensorRelayCasa sr4("CS", 4, senzor4, relay4, lcd, sr1);
 
 SensorRelay *srs[] = {&sr1, &sr2, &sr3, &sr4};
 
